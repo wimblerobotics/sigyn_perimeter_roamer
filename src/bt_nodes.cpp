@@ -906,26 +906,29 @@ namespace sigyn_perimeter_roamer
     send_goal_options.feedback_callback =
       std::bind(&NavigateToWaypoint::feedbackCallback, this, std::placeholders::_1, std::placeholders::_2);
 
-    // Send goal asynchronously and store the goal handle  
+    // Send goal asynchronously and wait for the goal handle
     auto goal_handle_future = action_client_->async_send_goal(goal_msg, send_goal_options);
 
-    // Wait longer for goal acceptance to detect immediate rejections
-    if (goal_handle_future.wait_for(std::chrono::milliseconds(1000)) == std::future_status::ready) {
-      goal_handle_ = goal_handle_future.get();
-      if (!goal_handle_) {
-        RCLCPP_ERROR(rclcpp::get_logger("NavigateToWaypoint"),
-          "Goal to waypoint %d was REJECTED! Check if robot is localized and goal is reachable.",
-          current_waypoint_id_);
-        return BT::NodeStatus::FAILURE;
-      }
-      RCLCPP_INFO(rclcpp::get_logger("NavigateToWaypoint"),
-        "Goal to waypoint %d accepted", current_waypoint_id_);
+    // Always wait for and get the goal handle to ensure callbacks are properly registered
+    // This is critical - without getting the goal handle, the result callback may not fire
+    auto wait_result = goal_handle_future.wait_for(std::chrono::seconds(5));
+    if (wait_result != std::future_status::ready) {
+      RCLCPP_ERROR(rclcpp::get_logger("NavigateToWaypoint"),
+        "Goal to waypoint %d timed out waiting for acceptance after 5 seconds!",
+        current_waypoint_id_);
+      return BT::NodeStatus::FAILURE;
     }
-    else {
-      // Goal handle will be set asynchronously, continue to RUNNING state
-      RCLCPP_INFO(rclcpp::get_logger("NavigateToWaypoint"),
-        "Goal to waypoint %d sent, waiting for acceptance", current_waypoint_id_);
+
+    goal_handle_ = goal_handle_future.get();
+    if (!goal_handle_) {
+      RCLCPP_ERROR(rclcpp::get_logger("NavigateToWaypoint"),
+        "Goal to waypoint %d was REJECTED! Check if robot is localized and goal is reachable.",
+        current_waypoint_id_);
+      return BT::NodeStatus::FAILURE;
     }
+    
+    RCLCPP_INFO(rclcpp::get_logger("NavigateToWaypoint"),
+      "Goal to waypoint %d accepted by navigation server", current_waypoint_id_);
 
     return BT::NodeStatus::RUNNING;
   }
