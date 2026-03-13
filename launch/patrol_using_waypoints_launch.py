@@ -19,8 +19,12 @@ def generate_launch_description():
     # Launch arguments
     waypoint_database_arg = DeclareLaunchArgument(
         'waypoint_database_path',
-        default_value='data/patrol_waypoints.db',
-        description='Path to the waypoints SQLite database file (relative to ~/sigyn_ws/src/Sigyn/)'
+        default_value=PathJoinSubstitution([
+            FindPackageShare('sigyn_perimeter_roamer'),
+            'data',
+            'patrol_waypoints.db'
+        ]),
+        description='Path to the waypoints SQLite database file'
     )
     
     loop_waypoints_arg = DeclareLaunchArgument(
