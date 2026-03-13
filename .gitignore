@@ -1,0 +1,26 @@
+# Build artifacts
+build/
+install/
+log/
+*.pyc
+__pycache__/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Backup files
+*~
+*.bak
+*.orig
+
+# Database files (may want to commit .db schema but not runtime data)
+# Uncomment if you want to ignore runtime databases
+# data/*.db
