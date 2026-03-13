@@ -753,15 +753,20 @@ namespace sigyn_perimeter_roamer
       else {
         // Stop - all waypoints completed
         setOutput("all_complete", true);
-        RCLCPP_INFO(rclcpp::get_logger("CheckWaypointsComplete"),
-          "All waypoints completed! Stopping waypoint following.");
+        // Use a static to log only once, to avoid spamming on every BT tick
+        static bool completion_logged = false;
+        if (!completion_logged) {
+          RCLCPP_INFO(rclcpp::get_logger("CheckWaypointsComplete"),
+            "All waypoints completed! Stopping waypoint following.");
+          completion_logged = true;
+        }
         return BT::NodeStatus::FAILURE; // This will cause the sequence to fail and exit
       }
     }
 
     // Still have waypoints to visit
     setOutput("all_complete", false);
-    RCLCPP_INFO(rclcpp::get_logger("CheckWaypointsComplete"),
+    RCLCPP_DEBUG(rclcpp::get_logger("CheckWaypointsComplete"),
       "Waypoint %d of %d - continuing", current_index + 1, total_waypoints);
     return BT::NodeStatus::SUCCESS; // Continue the sequence
   }

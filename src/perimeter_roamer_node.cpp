@@ -154,8 +154,13 @@ private:
   {
     // Check if shutdown was requested
     if (g_shutdown_requested) {
-      RCLCPP_INFO(this->get_logger(), "Shutdown requested, stopping behavior tree");
+      if (!shutdown_logged_) {
+        RCLCPP_INFO(this->get_logger(), "Shutdown requested, stopping behavior tree");
+        shutdown_logged_ = true;
+      }
       timer_->cancel();
+      tree_.rootNode()->halt();  // Halt the tree to stop it cleanly
+      rclcpp::shutdown();  // Force shutdown
       return;
     }
     
@@ -262,6 +267,9 @@ private:
   rclcpp::Time last_scan_time_;
   float battery_level_ = 100.0f;
   rclcpp::Time last_battery_time_;
+  
+  // Shutdown state
+  bool shutdown_logged_ = false;
 };
 
 }  // namespace sigyn_perimeter_roamer
