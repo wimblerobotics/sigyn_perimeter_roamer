@@ -15,6 +15,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(behaviortree_cpp_v3 REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 find_package(PkgConfig REQUIRED)
 
 # Find SQLite3
@@ -34,6 +35,7 @@ ament_target_dependencies(perimeter_roamer
   behaviortree_cpp_v3
   tf2
   tf2_geometry_msgs
+  ament_index_cpp
 )
 
 target_link_libraries(perimeter_roamer ${SQLITE3_LIBRARIES})

@@ -17,6 +17,7 @@
 #include "sensor_msgs/msg/battery_state.hpp"
 #include "geometry_msgs/msg/pose.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "ament_index_cpp/get_package_share_directory.hpp"
 
 #include "sigyn_perimeter_roamer/bt_nodes.hpp"
 
@@ -50,9 +51,9 @@ public:
 
     // Convert relative path to absolute path relative to package directory
     if (waypoint_db_path.find("/") != 0) {  // Not an absolute path
-      // Get package directory from ROS parameter server or construct it
-      std::string pkg_path = "/home/ros/sigyn_ws/src/Sigyn/sigyn_perimeter_roamer/";
-      waypoint_db_path = pkg_path + waypoint_db_path;
+      // Get package directory using ament_index
+      std::string pkg_share_dir = ament_index_cpp::get_package_share_directory("sigyn_perimeter_roamer");
+      waypoint_db_path = pkg_share_dir + "/" + waypoint_db_path;
     }
 
     if (bt_xml_filename.empty()) {

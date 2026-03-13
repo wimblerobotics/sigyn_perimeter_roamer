@@ -18,7 +18,7 @@ def generate_launch_description():
     # Launch arguments
     bt_xml_filename_arg = DeclareLaunchArgument(
         'bt_xml_filename',
-        default_value='simple_test.xml',
+        default_value='follow_waypoints.xml',
         description='Behavior tree XML filename (without path)')
     
     config_file_arg = DeclareLaunchArgument(
