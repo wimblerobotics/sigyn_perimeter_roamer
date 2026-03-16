@@ -58,6 +58,7 @@ install(DIRECTORY launch bt_xml config scripts data DESTINATION share/${PROJECT_
 install(PROGRAMS
   scripts/battery_simulator.py
   scripts/capture_waypoints.py
+  scripts/patrol_diagnostics.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
