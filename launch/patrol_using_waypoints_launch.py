@@ -41,7 +41,7 @@ def generate_launch_description():
     
     use_sim_time_arg = DeclareLaunchArgument(
         'use_sim_time',
-        default_value='true',
+        default_value='false',
         description='Use simulation (Gazebo) clock if true'
     )
 
@@ -78,16 +78,6 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration('start_waypoint_capture'))
     )
 
-    # Diagnostic monitor node — logs collisions, stalls, and recovery events
-    # Output: /tmp/patrol_diag_<timestamp>.log  (also printed to screen)
-    patrol_diagnostics = Node(
-        package='sigyn_perimeter_roamer',
-        executable='patrol_diagnostics.py',
-        name='patrol_diagnostics',
-        output='screen',
-        parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
-    )
-
     # Main perimeter roamer node with waypoint following
     perimeter_roamer_node = Node(
         package='sigyn_perimeter_roamer',
@@ -121,6 +111,12 @@ def generate_launch_description():
         start_waypoint_capture_arg,
         battery_simulator,
         waypoint_capture,
-        patrol_diagnostics,
-        perimeter_roamer_node
+        perimeter_roamer_node,
+        Node(
+            package='sigyn_perimeter_roamer',
+            executable='patrol_diagnostics.py',
+            name='patrol_diagnostics',
+            output='screen',
+            parameters=[{'use_sim_time': LaunchConfiguration('use_sim_time')}]
+        ),
     ])
